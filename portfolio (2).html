@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 1em;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            border: 2px solid white;
+            border-radius: 5px;
+            transition: color 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav ul li a::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%;
+            height: 150%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+        }
+
+        nav ul li a:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        nav ul li a:hover {
+            color: #333;
+            background-color: white;
+        }
+
+        section {
+            padding: 2em;
+            display: none;
+        }
+
+        #bio, #gallery, #contact, #games {
+            display: none;
+        }
+
+        .collection {
+            border: 1px solid #ccc;
+            padding: 1em;
+            margin-top: 1em;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            resize: both;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .collection .title-box {
+            padding: 1em;
+            margin-bottom: 1em;
+            font-weight: bold;
+            z-index: 1;
+            position: relative;
+            background: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid #ccc;
+        }
+
+        .collection .separator {
+            border-bottom: 1px solid #ccc;
+            margin: 1em 0;
+        }
+
+        .collection .description-box {
+            padding: 1em;
+            margin-bottom: 1em;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .collection .image-box {
+            padding: 1em;
+            margin-bottom: 1em;
+            height: 200px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .collection .gallery-box {
+            padding: 1em;
+            flex-grow: 1;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            overflow: auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            margin: 0.5em;
+            width: calc(33% - 1em);
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gallery-item img, .gallery-item video {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+
+        .gallery-item .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item .delete-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .collection .file-input-container {
+            margin-bottom: 1em;
+        }
+
+        .collection .file-input-container input {
+            display: none;
+        }
+
+        .collection .file-input-container label {
+            cursor: pointer;
+            padding: 0.5em 1em;
+            background-color: #333;
+            color: white;
+            border-radius: 5px;
+            transition: color 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .collection .file-input-container label::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%;
+            height: 150%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+        }
+
+        .collection .file-input-container label:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .collections-container, .webgl-collections-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #new-collection-btn, #new-webgl-btn {
+            margin-top: 1em;
+            padding: 0.5em 1em;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: color 0.3s ease, background-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #new-collection-btn::before, #new-webgl-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%;
+            height: 150%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+        }
+
+        #new-collection-btn:hover::before, #new-webgl-btn:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        #new-collection-btn:hover, #new-webgl-btn:hover {
+            color: #333;
+            background-color: white;
+        }
+
+        .delete-collection-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        .delete-collection-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .delete-webgl-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: -5px;
+            height: -5px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        .delete-webgl-btn:hover {
+            transform: scale(1.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form label {
+            margin-top: 1em;
+        }
+
+        form input, form textarea {
+            margin-top: 0.5em;
+            padding: 0.5em;
+            font-size: 1em;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        form button {
+            margin-top: 1em;
+            padding: 0.5em;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+
+        .webgl-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .webgl-frame {
+            border: 1px solid #ccc;
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            margin-top: 1em;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Xavi Sanchez Gimenez</h1>
+        <nav>
+            <ul>
+                <li><a id="nav-bio" href="#">Biografía</a></li>
+                <li><a id="nav-gallery" href="#">Galería</a></li>
+                <li><a id="nav-contact" href="#">Contacto</a></li>
+                <li><a id="nav-games" href="#">Games</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="bio">
+        <h2>Biografía</h2>
+        <div id="bio-content" contenteditable="true">Tu biografía va aquí...</div>
+    </section>
+
+    <section id="gallery">
+        <h2>Galería</h2>
+        <div class="collections-container" id="collections-container">
+            <button id="new-collection-btn">+ Nueva Colección</button>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2>Contacto</h2>
+        <p>Javier Sanchez Gimenez</p>
+        <p>+34 689434129</p>
+        <p><a href="mailto:xasa7980@gmail.com">xasa7980@gmail.com</a></p>
+    </section>
+
+    <section id="games">
+        <h2>Games</h2>
+        <div class="webgl-collections-container" id="webgl-collections-container">
+            <button id="new-webgl-btn">+ Nuevo Juego WebGL</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Javier Sanchez Gimenez. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav ul li a');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetId = link.id.replace('nav-', '');
+                    sections.forEach(section => {
+                        section.style.display = section.id === targetId ? 'block' : 'none';
+                    });
+                });
+            });
+
+            const collectionsContainer = document.getElementById('collections-container');
+            const newCollectionBtn = document.getElementById('new-collection-btn');
+
+            function saveCollections() {
+                const collections = [];
+                document.querySelectorAll('.collection').forEach(collection => {
+                    const title = collection.querySelector('.title-box').textContent;
+                    const description = collection.querySelector('.description-box').textContent;
+                    const bgImage = collection.style.backgroundImage;
+                    collections.push({ title, description, bgImage });
+                });
+                localStorage.setItem('collections', JSON.stringify(collections));
+            }
+
+            function loadCollections() {
+                const collections = JSON.parse(localStorage.getItem('collections')) || [];
+                collections.forEach(data => {
+                    createCollection(data.title, data.description, data.bgImage);
+                });
+            }
+
+            function createCollection(title = 'Nombre de la colección', description = 'Descripción de la colección...', bgImage = '') {
+                const collection = document.createElement('div');
+                collection.classList.add('collection', 'resizable');
+
+                const collectionTitle = document.createElement('div');
+                collectionTitle.classList.add('title-box');
+                collectionTitle.contentEditable = true;
+                collectionTitle.textContent = title;
+                collection.appendChild(collectionTitle);
+
+                const deleteCollectionBtn = document.createElement('button');
+                deleteCollectionBtn.classList.add('delete-collection-btn');
+                deleteCollectionBtn.textContent = '×';
+                deleteCollectionBtn.addEventListener('click', () => {
+                    collection.remove();
+                    saveCollections();
+                });
+                collection.appendChild(deleteCollectionBtn);
+
+                const separator1 = document.createElement('div');
+                separator1.classList.add('separator');
+                collection.appendChild(separator1);
+
+                const descriptionBox = document.createElement('div');
+                descriptionBox.classList.add('description-box');
+                descriptionBox.contentEditable = true;
+                descriptionBox.textContent = description;
+                collection.appendChild(descriptionBox);
+
+                const separator2 = document.createElement('div');
+                separator2.classList.add('separator');
+                collection.appendChild(separator2);
+
+                if (bgImage) {
+                    collection.style.backgroundImage = bgImage;
+                }
+
+                const imageBox = document.createElement('div');
+                imageBox.classList.add('image-box');
+
+                const imageInputLabel = document.createElement('label');
+                imageInputLabel.textContent = 'Subir Imagen';
+                imageInputLabel.setAttribute('for', 'image-input-' + new Date().getTime());
+
+                const imageInput = document.createElement('input');
+                imageInput.type = 'file';
+                imageInput.id = 'image-input-' + new Date().getTime();
+                imageInput.accept = 'image/*';
+
+                const imageInputContainer = document.createElement('div');
+                imageInputContainer.appendChild(imageInputLabel);
+                imageInputContainer.appendChild(imageInput);
+                imageBox.appendChild(imageInputContainer);
+
+                imageInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        const imgURL = URL.createObjectURL(file);
+                        collection.style.backgroundImage = `url(${imgURL})`;
+                        imageInputContainer.style.display = 'none';
+                        saveCollections();
+                    }
+                });
+
+                collection.appendChild(imageBox);
+
+                const fileInputContainer = document.createElement('div');
+                fileInputContainer.classList.add('file-input-container');
+
+                const fileInputLabel = document.createElement('label');
+                fileInputLabel.textContent = 'Elegir archivos';
+                fileInputLabel.setAttribute('for', 'file-input-' + new Date().getTime());
+
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.id = 'file-input-' + new Date().getTime();
+                fileInput.accept = 'image/*,video/*';
+                fileInput.multiple = true;
+
+                fileInputContainer.appendChild(fileInputLabel);
+                fileInputContainer.appendChild(fileInput);
+                collection.appendChild(fileInputContainer);
+
+                const galleryItemsContainer = document.createElement('div');
+                galleryItemsContainer.classList.add('gallery-box');
+                collection.appendChild(galleryItemsContainer);
+
+                fileInput.addEventListener('change', (event) => {
+                    const files = event.target.files;
+
+                    for (const file of files) {
+                        const galleryItem = document.createElement('div');
+                        galleryItem.classList.add('gallery-item');
+
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.classList.add('delete-btn');
+                        deleteBtn.textContent = '×';
+                        deleteBtn.addEventListener('click', () => {
+                            galleryItem.remove();
+                            saveCollections();
+                        });
+
+                        if (file.type.startsWith('image/')) {
+                            const img = document.createElement('img');
+                            img.src = URL.createObjectURL(file);
+                            img.onload = () => URL.revokeObjectURL(img.src);
+                            galleryItem.appendChild(img);
+                        } else if (file.type.startsWith('video/')) {
+                            const video = document.createElement('video');
+                            video.src = URL.createObjectURL(file);
+                            video.controls = true;
+                            video.onload = () => URL.revokeObjectURL(video.src);
+                            galleryItem.appendChild(video);
+                        }
+
+                        galleryItem.appendChild(deleteBtn);
+                        galleryItemsContainer.appendChild(galleryItem);
+                        saveCollections();
+                    }
+                });
+
+                collection.addEventListener('input', saveCollections);
+
+                collectionsContainer.appendChild(collection);
+            }
+
+            newCollectionBtn.addEventListener('click', () => {
+                createCollection();
+            });
+
+            const webglCollectionsContainer = document.getElementById('webgl-collections-container');
+            const newWebglBtn = document.getElementById('new-webgl-btn');
+
+            function saveWebGLCollections() {
+                const webglCollections = [];
+                document.querySelectorAll('.webgl-container').forEach(container => {
+                    const title = container.querySelector('.title-box').textContent;
+                    const game = container.querySelector('.webgl-frame').innerHTML;
+                    webglCollections.push({ title, game });
+                });
+                localStorage.setItem('webglCollections', JSON.stringify(webglCollections));
+            }
+
+            function loadWebGLCollections() {
+                const webglCollections = JSON.parse(localStorage.getItem('webglCollections')) || [];
+                webglCollections.forEach(data => {
+                    createWebGLContainer(data.title, data.game);
+                });
+            }
+
+            function createWebGLContainer(title = 'Nombre del Juego WebGL', game = '<p>Sube tu juego WebGL para jugar aquí.</p>') {
+                const webglContainer = document.createElement('div');
+                webglContainer.classList.add('webgl-container');
+
+                const webglTitle = document.createElement('div');
+                webglTitle.classList.add('title-box');
+                webglTitle.contentEditable = true;
+                webglTitle.textContent = title;
+                webglContainer.appendChild(webglTitle);
+
+                const deleteWebGLBtn = document.createElement('button');
+                deleteWebGLBtn.classList.add('delete-webgl-btn');
+                deleteWebGLBtn.textContent = '×';
+                deleteWebGLBtn.addEventListener('click', () => {
+                    webglContainer.remove();
+                    saveWebGLCollections();
+                });
+                webglContainer.appendChild(deleteWebGLBtn);
+
+                const webglFrame = document.createElement('div');
+                webglFrame.classList.add('webgl-frame');
+                webglFrame.innerHTML = game;
+                webglContainer.appendChild(webglFrame);
+
+                const webglInputContainer = document.createElement('div');
+                webglInputContainer.classList.add('file-input-container');
+
+                const webglInputLabel = document.createElement('label');
+                webglInputLabel.textContent = 'Subir Juego WebGL';
+                webglInputLabel.setAttribute('for', 'webgl-input-' + new Date().getTime());
+
+                const webglInput = document.createElement('input');
+                webglInput.type = 'file';
+                webglInput.id = 'webgl-input-' + new Date().getTime();
+                webglInput.accept = '.zip';
+                webglInputContainer.appendChild(webglInputLabel);
+                webglInputContainer.appendChild(webglInput);
+                webglContainer.appendChild(webglInputContainer);
+
+                webglInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file && file.name.endsWith('.zip')) {
+                        alert('Juego WebGL cargado: ' + file.name);
+                        webglFrame.innerHTML = `<p>Juego WebGL: ${file.name}</p>`;
+                        saveWebGLCollections();
+                    } else {
+                        alert('Por favor, sube un archivo .zip válido.');
+                    }
+                });
+
+                webglContainer.addEventListener('input', saveWebGLCollections);
+
+                webglCollectionsContainer.appendChild(webglContainer);
+            }
+
+            newWebglBtn.addEventListener('click', () => {
+                createWebGLContainer();
+            });
+
+            const bioContent = document.getElementById('bio-content');
+
+            function saveBio() {
+                localStorage.setItem('bioContent', bioContent.textContent);
+            }
+
+            function loadBio() {
+                const bio = localStorage.getItem('bioContent');
+                if (bio) {
+                    bioContent.textContent = bio;
+                }
+            }
+
+            bioContent.addEventListener('input', saveBio);
+
+            loadCollections();
+            loadWebGLCollections();
+            loadBio();
+        });
+    </script>
+</body>
+</html>
